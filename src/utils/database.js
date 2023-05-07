@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
 async function database() {
-   await mongoose.connect(process.env.db_connect);
+   await mongoose.connect(process.env.DB_CONNECT);
   }
 export default database;
