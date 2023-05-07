@@ -1,0 +1,2 @@
+- Intall node_modules : npm i
+- Run BE : npm start
