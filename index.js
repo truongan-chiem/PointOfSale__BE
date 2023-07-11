@@ -3,6 +3,8 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import fileUpload from "express-fileupload";
+import {createServer} from 'http';
+import { Server } from "socket.io";
 
 import route from "./src/Routes/index.js";
 import db from "./src/utils/database.js";
@@ -12,13 +14,34 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+const server = createServer(app);
+const io = new Server(server , {
+  cors: {
+    origin: process.env.URL_FE,
+    methods: ["GET", "POST"],
+  },
+})
+
+io.on('connection', (socket) => {
+    console.log("Connect socket server!!!");
+
+  socket.on("thanh toan" , (data) =>{
+    io.emit("finished" , {data : "finished payment!!!"})
+
+    console.log(data);
+  })
+});
+
 //middle ware
 app.use(bodyParser.json());
 app.use(cors());
 app.use(
   fileUpload({
     useTempFiles: true,
+    tempFileDir : '/tmp/',
     limits: { fileSize: 50 * 1024 * 1024 },
+    createParentPath : true
   })
 );
 
@@ -31,7 +54,7 @@ db()
   .then(() => console.log("Connection Success!!!"))
   .catch((err) => console.log("Connection Fail!!!"));
 //Run sever
-app.listen(port, (err) => {
+server.listen(port, (err) => {
   if (err) {
     return console.log("ERROR", err);
   }
