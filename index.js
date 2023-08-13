@@ -19,9 +19,8 @@ app.use(cors());
 const server = createServer(app);
 const io = new Server(server , {
   cors: {
-    origin: process.env.URL_FE,
-    methods: ["GET", "POST"],
-  },
+    origin: '*',
+  }
 })
 
 io.on('connection', (socket) => {
