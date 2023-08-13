@@ -15,6 +15,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+app.use(cors());
 const server = createServer(app);
 const io = new Server(server , {
   cors: {
@@ -36,7 +37,6 @@ io.on('connection', (socket) => {
 
 //middle ware
 app.use(bodyParser.json());
-app.use(cors());
 app.use(
   fileUpload({
     useTempFiles: true,
