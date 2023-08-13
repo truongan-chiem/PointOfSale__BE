@@ -16,22 +16,23 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const server = createServer(app);
-// const io = new Server(server , {
-//   cors: {
-//     origin: process.env.URL_FE,
-//     methods: ["GET", "POST"],
-//   },
-// })
+const io = new Server(server , {
+  cors: {
+    origin: process.env.URL_FE,
+    methods: ["GET", "POST"],
+  },
+})
 
-// io.on('connection', (socket) => {
-//     console.log("Connect socket server!!!");
+io.on('connection', (socket) => {
+  console.log("Connect socket server!!!");
+  console.log("----------------------");
 
-//   socket.on("thanh toan" , (data) =>{
-//     io.emit("finished" , {data : "finished payment!!!"})
+  socket.on("thanh toan" , (data) =>{
+    io.emit("finished" , {data : "finished payment!!!"})
 
-//     console.log(data);
-//   })
-// });
+    console.log(data);
+  })
+});
 
 //middle ware
 app.use(bodyParser.json());
