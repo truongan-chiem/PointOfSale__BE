@@ -29,6 +29,19 @@ const ProductSchema = mongoose.Schema({
     quantity : {
         type : Number,
         required : [true,'Quantity can not empty!!!']
+    },
+    qrScan : {
+        type : String,
+        required : [true,'QR Scan can not empty!!!'],
+        index: { unique: true } 
+    },
+    originalPrice : {
+        type : Number,
+        required : [true,'Original Price can not empty!!!']
+    },
+    active :{
+        type : Boolean,
+        default : true
     }
 })
 

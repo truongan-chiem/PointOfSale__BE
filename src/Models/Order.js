@@ -24,6 +24,14 @@ const OrderSchema = mongoose.Schema({
     cash:{
         type  : Number,
         required : [true,'Can not empty Cash!!!']
+    },
+    count:{
+        type  : Number,
+        required : [true,'Can not empty count!!!']
+    },
+    totalPrice:{
+        type  : Number,
+        required : [true,'Can not empty TotalPrice!!!']
     }
 }, { timestamps: { createdAt: 'created_at' } })
 

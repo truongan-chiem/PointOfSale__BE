@@ -121,10 +121,40 @@ class accController {
   }
   //find all account
   async findAll (req,res,next){
-    User.find({})
+    const {limit,page ,name} = req.query
+
+    let findUser ;
+    if(name){
+      findUser = {
+        "$expr": {
+          "$regexMatch": {
+            "input": { "$concat": ["$firstName", " ", "$lastName"] },
+            "regex": name,  //Your text search here
+            "options": "i"
+          }
+        }
+      }
+    }
+    else if (name === ""){
+      findUser = {}
+    }
+    
+    User.find(findUser)
     .sort({ _id: -1 })
     .select('-password -account')
-    .then(data => res.json(data))
+    .limit(limit)
+    .skip((page * limit) - limit)
+    .then(data => {
+      
+      User.find(findUser)
+      .then(result => {
+        const totalItem = result.length;
+        res.json({data:data , pagination : {totalItem:totalItem}})
+
+      })
+      .catch(err => res.json(err))
+    
+    })
     .catch(err => res.json(err))
   }
   //delete account by id

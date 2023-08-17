@@ -4,9 +4,41 @@ import ErrorHandler from "../utils/errorHandler.js";
 class productController {
   //get all product or get by name
   async getAllorByName(req, res, next) {
-    const { name } = req.query;
+    const { name ,limit, page ,type} = req.query;
 
-    Product.find(name ? { name: { $regex: ".*" + name + ".*" ,$options : "i"}} : {})
+    let findValue;
+    if(name){
+      findValue = {
+        name : {$regex: ".*" + name + ".*" ,$options : "i"},
+        active : true
+      }
+    }
+    else {
+      if(type === 'all'){
+        findValue = {
+          active : true
+        }
+      }
+      else{
+        findValue = {
+          active : true,
+          type : type
+        }
+      }
+    }
+
+    Product.find(findValue)
+      .sort({ _id: -1 })
+      .limit(!name && limit)
+      .skip(!name && ((limit * page) - limit))
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  }
+  //get all product by qrscan
+  async getProductByScan(req, res, next) {
+    const { qrScan } = req.query;
+
+    Product.find({active : true , qrScan : qrScan})
       .sort({ _id: -1 })
       .then((data) => res.json(data))
       .catch((err) => res.json(err));
@@ -18,7 +50,7 @@ class productController {
     } else if (!req.files.image) {
       return next(new ErrorHandler("Missing field image!!!", 404, "image"));
     } else {
-      const { name, type, price, desc,quantity } = req.body;
+      const { name, type, price, desc, quantity, originalPrice, qrScan  } = req.body;
    
 
       let publicId = Date.now();
@@ -38,6 +70,8 @@ class productController {
           publicId: publicId,
           url: image.secure_url,
         },
+        originalPrice, 
+        qrScan
       });
 
       product
@@ -62,7 +96,14 @@ class productController {
                 new ErrorHandler(err.errors[field[0]].message, 404, field[0])
               );
             }
-          } else {
+          }
+          else if (err.code === 11000) {
+            const keys = Object.keys(err.keyValue);
+            return next(
+              new ErrorHandler(`${keys[0]} already exist!!!`, 404, keys[0])
+            )
+          }
+          else {
             res.json(err);
           }
         });
@@ -71,7 +112,7 @@ class productController {
   //delete product
   async deleteProduct(req, res, next) {
     const { id } = req.params;
-    Product.findByIdAndDelete(id)
+    Product.findByIdAndUpdate(id , {active : false})
       .then((data) => {
         if (data) {
           res.json({ success: true });
@@ -91,7 +132,7 @@ class productController {
       return next(new ErrorHandler("Missing field image!!!", 404, "image"));
     } else {
       const { id } = req.params;
-      const { name, type, price, desc ,quantity } = req.body;
+      const { name, type, price, desc ,quantity , originalPrice, qrScan } = req.body;
      
       let publicId = Date.now();
       const fileImage = req.files.image;
@@ -110,6 +151,8 @@ class productController {
           publicId,
           url: image.secure_url,
         },
+        originalPrice, 
+        qrScan
       };
       Product.findByIdAndUpdate(id, { $set: newProduct } ,{new : true})
         .then((data) => {
