@@ -43,7 +43,7 @@ const ProductSchema = mongoose.Schema({
         type : Boolean,
         default : true
     }
-})
+},{ timestamps: { createdAt: 'created_at' } })
 
 
 

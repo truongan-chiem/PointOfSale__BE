@@ -228,7 +228,7 @@ class statisticController {
       }
     })
       .sort({ _id: -1 })
-      .populate({ path: "orders.productId", select: "-quantity" })
+      .populate({ path: "orders.productId" })
       .then((data) => {
         let arrTemp = []
         data.forEach((item) => {

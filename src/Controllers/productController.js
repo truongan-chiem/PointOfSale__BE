@@ -4,7 +4,7 @@ import ErrorHandler from "../utils/errorHandler.js";
 class productController {
   //get all product or get by name
   async getAllorByName(req, res, next) {
-    const { name ,limit, page ,type} = req.query;
+    const { name ,limit, page ,type , sortBy , sortType} = req.query;
 
     let findValue;
     if(name){
@@ -26,12 +26,22 @@ class productController {
         }
       }
     }
-
+    let sortTemp ={}
+    sortTemp[sortBy] = sortType === 'acs' ? 1 : -1;
     Product.find(findValue)
-      .sort({ _id: -1 })
+      .sort(sortTemp)
       .limit(!name && limit)
       .skip(!name && ((limit * page) - limit))
-      .then((data) => res.json(data))
+      .then((data) => {
+      
+        Product.find(findValue)
+        .then(result => {
+          const totalItem = result.length;
+          res.json({data:data , pagination : {totalItem:totalItem}})
+  
+        })
+        .catch(err => res.json(err))
+      })
       .catch((err) => res.json(err));
   }
   //get all product by qrscan
