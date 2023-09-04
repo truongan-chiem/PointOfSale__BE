@@ -32,7 +32,7 @@ const ProductSchema = mongoose.Schema({
     },
     qrScan : {
         type : String,
-        required : [true,'QR Scan can not empty!!!'],
+        required : [true,'Bar Scan can not empty!!!'],
         index: { unique: true } 
     },
     originalPrice : {

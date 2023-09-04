@@ -8,6 +8,9 @@ const Routes = express.Router();
 //[GET] /acc/
 Routes.get('/', accController.findAll)
 
+//[GET] - get order by full name : /acc/order/:id
+Routes.get('/order',accController.getOrderByNameAcc)
+
 //[GET] /acc/:id
 Routes.get('/:id', accController.findSomeOne)
 
@@ -25,6 +28,8 @@ Routes.put('/update/:id' ,accController.updateAccById)
 
 //[PUT] - change pw : /acc/changepw/:id
 Routes.put('/changepw/:id' ,accController.changePassword)
+
+
 
 
 export default Routes;

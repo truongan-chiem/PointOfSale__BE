@@ -110,7 +110,7 @@ class productController {
           else if (err.code === 11000) {
             const keys = Object.keys(err.keyValue);
             return next(
-              new ErrorHandler(`${keys[0]} already exist!!!`, 404, keys[0])
+              new ErrorHandler(`${keys[0] === "qrScan" ? "Bar Code" : keys[0]} already exist!!!`, 404, keys[0])
             )
           }
           else {

@@ -2,6 +2,7 @@ import cloundinary from "../utils/cloudinary.js";
 import ErrorHandler from "../utils/errorHandler.js";
 
 import {User} from '../Models/User.js'
+import {Order} from '../Models/Order.js'
 import { comparePw, hashPw } from "../utils/hashPw.js";
 
 class accController {
@@ -271,6 +272,52 @@ class accController {
       res.json({message : "Can not found user"})
     }
     
+  }
+
+  // get order by name
+  async getOrderByNameAcc(req, res, next) {
+    const { start, end, limit, page , sortBy, sortType,fullName} = req.query;
+
+    let lastTimeOfDayEnd = new Date(end);
+    lastTimeOfDayEnd.setHours(23, 59, 59, 999);
+    let sortTemp ={}
+    sortTemp[sortBy] = sortType === 'acs' ? 1 : -1;
+    Order.find(
+      start && end
+        ? {
+            created_at: {
+              $gte: new Date(start),
+              $lt: lastTimeOfDayEnd,
+            },
+          }
+        : {}
+    )
+      .sort(sortTemp)
+      .populate({
+        path: "owenId",
+        select: "_id firstName lastName image role gender",
+      })
+      .populate({ path: "orders.productId", select: "-listOptions" })
+      .limit(limit)
+      .skip(limit * page - limit)
+      .then((data) => {
+        const newFilter = fullName ? data.filter(item => fullName.length > 0 ? String(item.owenId.lastName +" "+ item.owenId.firstName).toLocaleLowerCase().includes(fullName.toLocaleLowerCase()) : true) : data;
+        let totalItem = newFilter.length;
+            let profit = 0;
+            let countProductSold = 0
+            newFilter.forEach(bill =>{
+              let temp = 0;
+              let tempCount = 0;
+              bill.orders.forEach(itemOrder =>{
+                temp += (itemOrder.productId.price - itemOrder.productId.originalPrice) * itemOrder.number
+                tempCount+=itemOrder.number
+              })
+              profit+=temp;
+              countProductSold+=tempCount;
+            })
+        res.json({data: newFilter , totalItem,profit,countProductSold}); 
+      })
+      .catch((err) => res.json(err));
   }
 }
 
