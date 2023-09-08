@@ -4,6 +4,7 @@ import ErrorHandler from "../utils/errorHandler.js";
 import {User} from '../Models/User.js'
 import {Order} from '../Models/Order.js'
 import { comparePw, hashPw } from "../utils/hashPw.js";
+import { Types } from "mongoose";
 
 class accController {
   //login account
@@ -11,7 +12,7 @@ class accController {
     if (req.body.account && req.body.password) {
       const { account, password } = req.body;
 
-      const data = await User.findOne({ account });
+      const data = await User.findOne({ account , active:true });
 
       if (data) {
         const match = await comparePw(password, data.password);
@@ -108,7 +109,7 @@ class accController {
   //find account by id
   async findSomeOne(req, res, next) {
     const { id } = req.params;
-    User.findById(id)
+    User.findOne({_id: Types.ObjectId(id),active:true})
       .then((user) => {
         if (user) {
           delete user._doc.account;
@@ -133,11 +134,12 @@ class accController {
             "regex": name,  //Your text search here
             "options": "i"
           }
-        }
+        },
+        active:true
       }
     }
     else if (name === ""){
-      findUser = {}
+      findUser = {active:true}
     }
     
     User.find(findUser)
@@ -161,7 +163,7 @@ class accController {
   //delete account by id
   async deleteAcc(req, res, next) {
     const { id } = req.params;
-    User.findByIdAndDelete(id)
+    User.findByIdAndUpdate(id , {active : false})
       .then((data) => {
         if (data) {
           res.json({ success: true });

@@ -61,6 +61,10 @@ const UserSchema = mongoose.Schema({
     postalCode :{
         type : Number,
         required : [true,"Postal Code can not empty!!!"]
+    },
+    active: {
+        type: Boolean,
+        default : true
     }
 })
 

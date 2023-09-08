@@ -1,7 +1,7 @@
 import express from 'express'
 
 import accController from '../Controllers/accController.js';
-
+import { User } from '../Models/User.js';
 
 const Routes = express.Router();
 
@@ -10,6 +10,13 @@ Routes.get('/', accController.findAll)
 
 //[GET] - get order by full name : /acc/order/:id
 Routes.get('/order',accController.getOrderByNameAcc)
+
+//
+// Routes.get('/updateAllAcc' ,async (req,res) =>{
+//     User.updateMany({}, { $set: { address: 'Default Address' } })
+//     .then(data => {res.json(data)})
+//     .catch(err => res.json(err))
+// })
 
 //[GET] /acc/:id
 Routes.get('/:id', accController.findSomeOne)
@@ -28,6 +35,7 @@ Routes.put('/update/:id' ,accController.updateAccById)
 
 //[PUT] - change pw : /acc/changepw/:id
 Routes.put('/changepw/:id' ,accController.changePassword)
+
 
 
 
