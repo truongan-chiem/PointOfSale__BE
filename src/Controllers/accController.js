@@ -62,9 +62,9 @@ class accController {
         },
         gender,
         phoneNumber : '0909090909',
-        address : "address living",
+        address : "Default Address",
         birthday : "0001-00-00",
-        location : "Location o quan binh thanh",
+        location : "Viet Nam",
         postalCode : 70
       });
 
